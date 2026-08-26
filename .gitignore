@@ -12,3 +12,6 @@ apache-maven-*/
 # OS
 .DS_Store
 Thumbs.db
+
+# Spring Boot configuration
+BE/src/main/resources/application.properties
