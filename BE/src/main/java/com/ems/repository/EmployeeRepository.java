@@ -1,16 +1,7 @@
 package com.ems.repository;
 
 import com.ems.model.Employee;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class EmployeeRepository {
-
-    public Employee findEmployee() {
-        return new Employee(
-            1L,
-            "Ngoc",
-            "ngoc@example.com"
-        );
-    }
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 }
