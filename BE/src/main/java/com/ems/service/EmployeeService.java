@@ -1,10 +1,11 @@
 package com.ems.service;
 
-import com.ems.model.Employee;
-import com.ems.repository.EmployeeRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.ems.model.Employee;
+import com.ems.repository.EmployeeRepository;
 
 @Service
 public class EmployeeService {
@@ -27,6 +28,11 @@ public class EmployeeService {
 
     // Thêm Employee
     public Employee createEmployee(Employee employee) {
+
+        if (employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         return employeeRepository.save(employee);
     }
 

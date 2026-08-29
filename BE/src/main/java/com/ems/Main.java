@@ -1,8 +1,8 @@
-package com.ems;
+    package com.ems;
 
-public class Main {
+    public class Main {
 
-    public static void main(String[] args) {
-        System.out.println("Employee Management System");
+        public static void main(String[] args) {
+            System.out.println("Employee Management System");
+        }
     }
-}
