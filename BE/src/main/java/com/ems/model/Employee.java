@@ -20,13 +20,10 @@ public class Employee {
     @Column(unique = true, nullable = false)
     private String email;
 
-    public Employee() {
-    }
+    @Column(name = "department_id")
+    private Long departmentId;
 
-    public Employee(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
+    public Employee() {
     }
 
     public Long getId() {
@@ -52,4 +49,13 @@ public class Employee {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
 }
+

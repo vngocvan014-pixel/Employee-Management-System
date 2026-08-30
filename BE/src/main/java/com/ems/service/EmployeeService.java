@@ -18,7 +18,7 @@ public class EmployeeService {
 
     // Lấy tất cả Employee
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+        return employeeRepository.findAllEmployees();
     }
 
     // Tìm Employee theo ID
@@ -38,7 +38,9 @@ public class EmployeeService {
 
     // Cập nhật Employee
     public Employee updateEmployee(Long id, Employee employee) {
-        Employee existingEmployee = employeeRepository.findById(id).orElse(null);
+
+        Employee existingEmployee =
+                employeeRepository.findById(id).orElse(null);
 
         if (existingEmployee == null) {
             return null;
@@ -55,3 +57,4 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 }
+
