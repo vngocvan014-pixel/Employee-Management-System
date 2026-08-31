@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ems.model.Employee;
+import com.ems.dto.EmployeeDTO;
+import com.ems.dto.PageResponseDTO;
 import com.ems.repository.EmployeeRepository;
 
 @Service
@@ -16,98 +17,136 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-
-    // =========================
+    // =====================================================
     // GET ALL
-    // =========================
+    // =====================================================
 
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findAllEmployees();
     }
 
-
-    // =========================
+    // =====================================================
     // GET BY ID
-    // =========================
+    // =====================================================
 
-    public Employee getEmployeeById(Long id) {
+    public EmployeeDTO getEmployeeById(Long id) {
         return employeeRepository.findEmployeeById(id);
     }
 
-
-    // =========================
+    // =====================================================
     // CREATE
-    // =========================
+    // =====================================================
 
-    public Employee createEmployee(Employee employee) {
+    public EmployeeDTO createEmployee(EmployeeDTO employee) {
 
-        // Kiểm tra email đã tồn tại
-        if (employeeRepository.countByEmail(employee.getEmail()) > 0) {
-            throw new IllegalArgumentException("Email already exists");
+        if (employeeRepository.existsByEmail(employee.getEmail())) {
+            throw new IllegalArgumentException(
+                    "Email already exists"
+            );
         }
 
-        int result = employeeRepository.insertEmployee(
-            employee.getEmployeeCode(),
-            employee.getName(),
-            employee.getEmail(),
-            employee.getPhone(),
-            employee.getDepartmentId(),
-            employee.getPositionId(),
-            employee.getEmploymentType(),
-            employee.getStatus(),
-            employee.getHireDate(),
-            employee.getResignationDate(),
-            employee.getManagerId(),
-            employee.getSalary()
-        );
+        Long id = employeeRepository.insertEmployee(employee);
 
-        if (result == 0) {
-            throw new IllegalStateException("Failed to create employee");
-        }
-
-        // Lấy lại employee vừa insert
-        return employeeRepository.findEmployeeById(
-            employee.getId()
-        );
+        return employeeRepository.findEmployeeById(id);
     }
 
-
-    // =========================
+    // =====================================================
     // UPDATE
-    // =========================
+    // =====================================================
 
-    public Employee updateEmployee(Long id, Employee employee) {
+    public EmployeeDTO updateEmployee(
+            Long id,
+            EmployeeDTO employee) {
 
-        Employee existingEmployee =
+        EmployeeDTO existingEmployee =
                 employeeRepository.findEmployeeById(id);
 
         if (existingEmployee == null) {
             return null;
         }
 
-        existingEmployee.setEmployeeCode(employee.getEmployeeCode());
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setEmail(employee.getEmail());
-        existingEmployee.setPhone(employee.getPhone());
-        existingEmployee.setDepartmentId(employee.getDepartmentId());
-        existingEmployee.setPositionId(employee.getPositionId());
-        existingEmployee.setEmploymentType(employee.getEmploymentType());
-        existingEmployee.setStatus(employee.getStatus());
-        existingEmployee.setHireDate(employee.getHireDate());
-        existingEmployee.setResignationDate(employee.getResignationDate());
-        existingEmployee.setManagerId(employee.getManagerId());
-        existingEmployee.setSalary(employee.getSalary());
+        if (!existingEmployee.getEmail().equals(employee.getEmail())
+                && employeeRepository.existsByEmail(employee.getEmail())) {
 
-        return employeeRepository.save(existingEmployee);
+            throw new IllegalArgumentException(
+                    "Email already exists"
+            );
+        }
+
+        int result =
+                employeeRepository.updateEmployee(
+                        id,
+                        employee
+                );
+
+        if (result == 0) {
+            return null;
+        }
+
+        return employeeRepository.findEmployeeById(id);
     }
 
-
-    // =========================
+    // =====================================================
     // DELETE
-    // =========================
+    // =====================================================
 
-    public void deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
+    public boolean deleteEmployee(Long id) {
+
+        int result =
+                employeeRepository.deleteEmployee(id);
+
+        return result > 0;
+    }
+
+    // =====================================================
+    // SEARCH + FILTER + PAGINATION
+    // =====================================================
+
+    public PageResponseDTO<EmployeeDTO> searchEmployees(
+            String keyword,
+            Long departmentId,
+            String status,
+            int page,
+            int size) {
+
+        // Không cho page âm
+        if (page < 0) {
+            page = 0;
+        }
+
+        // Giới hạn size để tránh query quá lớn
+        if (size <= 0) {
+            size = 10;
+        }
+
+        if (size > 100) {
+            size = 100;
+        }
+
+        int offset = page * size;
+
+        List<EmployeeDTO> employees =
+                employeeRepository.searchEmployees(
+                        keyword,
+                        departmentId,
+                        status,
+                        size,
+                        offset
+                );
+
+        int totalElements =
+                employeeRepository.countEmployees(
+                        keyword,
+                        departmentId,
+                        status
+                );
+
+        return new PageResponseDTO<>(
+                employees,
+                page,
+                size,
+                totalElements
+        );
     }
 }
 

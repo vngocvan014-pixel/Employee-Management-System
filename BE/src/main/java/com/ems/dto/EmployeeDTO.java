@@ -7,47 +7,23 @@ import java.time.LocalDateTime;
 public class EmployeeDTO {
 
     private Long id;
-
     private String employeeCode;
-
     private String name;
-
     private String email;
-
     private String phone;
-
     private Long departmentId;
-
     private Long positionId;
-
     private String employmentType;
-
     private String status;
-
     private LocalDate hireDate;
-
     private LocalDate resignationDate;
-
     private Long managerId;
-
     private BigDecimal salary;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
-
-    // =========================
-    // Constructor
-    // =========================
 
     public EmployeeDTO() {
     }
-
-
-    // =========================
-    // Getter / Setter
-    // =========================
 
     public Long getId() {
         return id;
