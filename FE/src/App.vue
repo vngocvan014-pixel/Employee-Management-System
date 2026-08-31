@@ -1,9 +1,12 @@
-```vue
+<template>
+
+  <RouterView />
+
+</template>
+
 <script setup>
-import EmployeeList from './views/EmployeeList.vue'
+
+import { RouterView } from 'vue-router'
+
 </script>
 
-<template>
-  <EmployeeList />
-</template>
-```

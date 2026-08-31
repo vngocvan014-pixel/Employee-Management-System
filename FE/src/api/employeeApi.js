@@ -3,27 +3,59 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 })
 
-export const getEmployees = () => {
-  return api.get('/employees')
+// ================================
+// GET EMPLOYEES
+// ================================
+export const getEmployees = async (page = 0, size = 10) => {
+  const response = await api.get('/employees/search', {
+    params: {
+      page,
+      size
+    }
+  })
+
+  return response.data
 }
 
-export const getEmployeeById = (id) => {
-  return api.get(`/employees/${id}`)
+// ================================
+// GET EMPLOYEE BY ID
+// ================================
+export const getEmployeeById = async (id) => {
+  const response = await api.get(`/employees/${id}`)
+
+  return response.data
 }
 
-export const createEmployee = (employee) => {
-  return api.post('/employees', employee)
+// ================================
+// CREATE EMPLOYEE
+// ================================
+export const createEmployee = async (employee) => {
+  const response = await api.post('/employees', employee)
+
+  return response.data
 }
 
-export const updateEmployee = (id, employee) => {
-  return api.put(`/employees/${id}`, employee)
+// ================================
+// UPDATE EMPLOYEE
+// ================================
+export const updateEmployee = async (id, employee) => {
+  const response = await api.put(`/employees/${id}`, employee)
+
+  return response.data
 }
 
-export const deleteEmployee = (id) => {
-  return api.delete(`/employees/${id}`)
+// ================================
+// DELETE EMPLOYEE
+// ================================
+export const deleteEmployee = async (id) => {
+  const response = await api.delete(`/employees/${id}`)
+
+  return response.data
 }
+
+export default api
 

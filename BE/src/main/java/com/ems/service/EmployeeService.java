@@ -22,6 +22,7 @@ public class EmployeeService {
     // =====================================================
 
     public List<EmployeeDTO> getAllEmployees() {
+
         return employeeRepository.findAllEmployees();
     }
 
@@ -30,6 +31,7 @@ public class EmployeeService {
     // =====================================================
 
     public EmployeeDTO getEmployeeById(Long id) {
+
         return employeeRepository.findEmployeeById(id);
     }
 
@@ -39,7 +41,9 @@ public class EmployeeService {
 
     public EmployeeDTO createEmployee(EmployeeDTO employee) {
 
-        if (employeeRepository.existsByEmail(employee.getEmail())) {
+        if (employeeRepository.existsByEmail(
+                employee.getEmail())) {
+
             throw new IllegalArgumentException(
                     "Email already exists"
             );
@@ -58,15 +62,17 @@ public class EmployeeService {
             Long id,
             EmployeeDTO employee) {
 
-        EmployeeDTO existingEmployee =
+        EmployeeDTO existing =
                 employeeRepository.findEmployeeById(id);
 
-        if (existingEmployee == null) {
+        if (existing == null) {
             return null;
         }
 
-        if (!existingEmployee.getEmail().equals(employee.getEmail())
-                && employeeRepository.existsByEmail(employee.getEmail())) {
+        // Kiểm tra email mới có bị trùng không
+        if (!existing.getEmail().equals(employee.getEmail())
+                && employeeRepository.existsByEmail(
+                        employee.getEmail())) {
 
             throw new IllegalArgumentException(
                     "Email already exists"
@@ -109,22 +115,13 @@ public class EmployeeService {
             int page,
             int size) {
 
-        // Không cho page âm
-        if (page < 0) {
-            page = 0;
-        }
-
-        // Giới hạn size để tránh query quá lớn
-        if (size <= 0) {
-            size = 10;
-        }
-
-        if (size > 100) {
-            size = 100;
-        }
+        // page = 0 → offset = 0
+        // page = 1 → offset = size
+        // page = 2 → offset = size * 2
 
         int offset = page * size;
 
+        // Lấy danh sách employee
         List<EmployeeDTO> employees =
                 employeeRepository.searchEmployees(
                         keyword,
@@ -134,6 +131,7 @@ public class EmployeeService {
                         offset
                 );
 
+        // Tổng số employee phù hợp điều kiện search
         int totalElements =
                 employeeRepository.countEmployees(
                         keyword,
@@ -141,12 +139,38 @@ public class EmployeeService {
                         status
                 );
 
-        return new PageResponseDTO<>(
-                employees,
-                page,
-                size,
-                totalElements
+        // Tính tổng số page
+        int totalPages =
+                (int) Math.ceil(
+                        (double) totalElements / size
+                );
+
+        // Tạo response
+        PageResponseDTO<EmployeeDTO> response =
+                new PageResponseDTO<>();
+
+        response.setData(employees);
+        response.setPage(page);
+        response.setSize(size);
+        response.setTotalElements(totalElements);
+        response.setTotalPages(totalPages);
+
+        return response;
+    }
+
+    // =====================================================
+    // COUNT
+    // =====================================================
+
+    public int countEmployees(
+            String keyword,
+            Long departmentId,
+            String status) {
+
+        return employeeRepository.countEmployees(
+                keyword,
+                departmentId,
+                status
         );
     }
 }
-

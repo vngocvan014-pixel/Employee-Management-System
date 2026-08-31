@@ -1,70 +1,221 @@
-```vue
-<script setup>
-import { onMounted, ref } from 'vue'
-import { getEmployees } from '../api/employeeApi'
-import EmployeeForm from '../components/EmployeeForm.vue'
-import EmployeeTable from '../components/EmployeeTable.vue'
-
-const employees = ref([])
-const loading = ref(false)
-const error = ref('')
-
-const loadEmployees = async () => {
-  loading.value = true
-  error.value = ''
-
-  try {
-    const response = await getEmployees()
-    employees.value = response.data
-  } catch (err) {
-    console.error(err)
-    error.value = 'Failed to load employees.'
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleEmployeeCreated = (employee) => {
-  employees.value.push(employee)
-}
-
-onMounted(() => {
-  loadEmployees()
-})
-</script>
-
 <template>
-  <main class="employee-list">
-    <h1>Employee Management System</h1>
 
-    <EmployeeForm @created="handleEmployeeCreated" />
+  <div class="employee-page">
 
-    <p v-if="loading">Loading...</p>
+    <!-- =========================
+         HEADER
+    ========================== -->
 
-    <p v-if="error" class="error">
-      {{ error }}
-    </p>
+    <div class="page-header">
 
-    <EmployeeTable
-      v-if="!loading && !error"
-      :employees="employees"
-    />
+      <div>
+        <h1>社員管理</h1>
+        <p>Employee Management System</p>
+      </div>
 
-    <p v-if="!loading && !error && employees.length === 0">
-      No employees found.
-    </p>
-  </main>
+      <button
+        class="add-button"
+        @click="goAdd"
+      >
+        + 社員追加
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         LOADING
+    ========================== -->
+
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      データを読み込んでいます...
+    </div>
+
+
+    <!-- =========================
+         EMPLOYEE TABLE
+    ========================== -->
+
+    <div v-else>
+
+      <EmployeeTable
+        :employees="employees"
+      />
+
+    </div>
+
+  </div>
+
 </template>
 
-<style scoped>
-.employee-list {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
+
+<script setup>
+
+import { ref, onMounted } from 'vue'
+
+import { useRouter } from 'vue-router'
+
+import EmployeeTable
+  from '../components/EmployeeTable.vue'
+
+import { getEmployees }
+  from '../services/employeeApi'
+
+
+// =========================
+// ROUTER
+// =========================
+
+const router = useRouter()
+
+
+// =========================
+// DATA
+// =========================
+
+const employees = ref([])
+
+const loading = ref(false)
+
+
+// =========================
+// LOAD EMPLOYEES
+// =========================
+
+const loadEmployees = async () => {
+
+  try {
+
+    loading.value = true
+
+    const result =
+      await getEmployees(0, 10)
+
+    employees.value =
+      result.data
+
+  } catch (error) {
+
+    console.error(
+      'Failed to load employees:',
+      error
+    )
+
+  } finally {
+
+    loading.value = false
+
+  }
+
 }
 
-.error {
-  color: red;
+
+// =========================
+// GO TO ADD PAGE
+// =========================
+
+const goAdd = () => {
+
+  router.push('/employees/new')
+
 }
+
+
+// =========================
+// INITIAL LOAD
+// =========================
+
+onMounted(() => {
+
+  loadEmployees()
+
+})
+
+</script>
+
+
+<style scoped>
+
+.employee-page {
+  padding: 30px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.page-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+
+}
+
+.page-header h1 {
+
+  margin: 0;
+
+  font-size: 28px;
+
+}
+
+.page-header p {
+
+  margin-top: 5px;
+
+  color: #777;
+
+}
+
+
+/* =========================
+   ADD BUTTON
+========================= */
+
+.add-button {
+
+  padding: 10px 18px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #1976d2;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+}
+
+.add-button:hover {
+
+  background: #1565c0;
+
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+
+  padding: 40px;
+
+  text-align: center;
+
+}
+
 </style>
-```
