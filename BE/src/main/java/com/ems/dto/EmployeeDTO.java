@@ -1,66 +1,53 @@
-package com.ems.model;
+package com.ems.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+public class EmployeeDTO {
 
-@Entity
-@Table(name = "employees")
-public class Employee {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "employee_code", unique = true, nullable = false)
     private String employeeCode;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
     private String email;
 
     private String phone;
 
-    @Column(name = "department_id", nullable = false)
     private Long departmentId;
 
-    @Column(name = "position_id", nullable = false)
     private Long positionId;
 
-    @Column(name = "employment_type", nullable = false)
     private String employmentType;
 
-    @Column(nullable = false)
     private String status;
 
-    @Column(name = "hire_date", nullable = false)
     private LocalDate hireDate;
 
-    @Column(name = "resignation_date")
     private LocalDate resignationDate;
 
-    @Column(name = "manager_id")
     private Long managerId;
 
     private BigDecimal salary;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Employee() {
+
+    // =========================
+    // Constructor
+    // =========================
+
+    public EmployeeDTO() {
     }
+
+
+    // =========================
+    // Getter / Setter
+    // =========================
 
     public Long getId() {
         return id;
